@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-5ccb381ecbafc701b9d21b8f1998edf269494d0c",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.4.0"
+  },
+  "userSourceNameMap": {
+    "contracts/ProductRegistry.sol": "project/contracts/ProductRegistry.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/ProductRegistry.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.20;\r\n\r\ncontract ProductRegistry {\r\n    error Unauthorized();\r\n    error EmptyName();\r\n    error InvalidPrice();\r\n    error IncorrectPayment(uint256 expected, uint256 received);\r\n    error WithdrawFailed();\r\n\r\n    struct Product {\r\n        uint256 id;\r\n        string name;\r\n        uint256 price;\r\n        address seller;\r\n    }\r\n\r\n    address public immutable owner;\r\n    uint256 public productCount;\r\n\r\n    mapping(uint256 => Product) private products;\r\n\r\n    event ProductAdded(uint256 indexed id, string name, uint256 price, address indexed seller);\r\n    event Withdrawn(address indexed by, uint256 amount);\r\n\r\n    modifier onlyOwner() {\r\n        if (msg.sender != owner) revert Unauthorized();\r\n        _;\r\n    }\r\n\r\n    constructor() {\r\n        owner = msg.sender;\r\n    }\r\n\r\n    function addProduct(string calldata name, uint256 price) external payable returns (uint256 id) {\r\n        if (bytes(name).length == 0) revert EmptyName();\r\n        if (price == 0) revert InvalidPrice();\r\n        if (msg.value != price) revert IncorrectPayment(price, msg.value);\r\n\r\n        id = ++productCount;\r\n        products[id] = Product({\r\n            id: id,\r\n            name: name,\r\n            price: price,\r\n            seller: msg.sender\r\n        });\r\n\r\n        emit ProductAdded(id, name, price, msg.sender);\r\n    }\r\n\r\n    function getProduct(uint256 id) external view returns (Product memory) {\r\n        return products[id];\r\n    }\r\n\r\n    function withdraw() external onlyOwner {\r\n        uint256 amount = address(this).balance;\r\n        (bool ok, ) = payable(owner).call{value: amount}(\"\");\r\n        if (!ok) revert WithdrawFailed();\r\n\r\n        emit Withdrawn(msg.sender, amount);\r\n    }\r\n}"
+      }
+    }
+  }
+}
