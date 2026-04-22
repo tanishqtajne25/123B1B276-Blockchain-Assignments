@@ -106,16 +106,15 @@ node retrieve.js <CID>
 
 You can also set `PINATA_CID` in `.env` and run `node retrieve.js`.
 
-### Assignment 5 (DAO)
-1. Open Remix IDE.
-2. Compile `DAO.sol`.
-3. Deploy using MetaMask.
-4. Interact with core functions:
-   - `addMember`
-   - `createProposal`
-   - `vote`
-   - `executeProposal`
-5. Verify proposal state and results from getter functions.
+### Assignment 5 (DAO Smart Contract)
+1. Open Remix IDE
+2. Compile dao.sol
+3. Deploy using MetaMask
+4. Interact with:
+   - createProposal
+   - vote
+   - executeProposal
+5. View results using getProposals()
 
 ---
 
